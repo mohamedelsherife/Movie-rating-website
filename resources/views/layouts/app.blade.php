@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <script src="{{ asset('js/admin.js') }}" defer></script>
 </head>
 <body>
     <nav class="navbar">
@@ -35,13 +36,6 @@
     </nav>
 
     <main class="container main">
-        @if(session('success'))
-            <div class="toast" role="status">
-                <i class="fa-solid fa-circle-check"></i>
-                <span>{{ session('success') }}</span>
-            </div>
-        @endif
-
         @yield('content')
     </main>
 
@@ -52,46 +46,23 @@
         </div>
     </footer>
 
-    {{-- Shared delete confirmation dialog, used by any form with data-confirm --}}
-    <dialog id="confirm-dialog" class="modal">
-        <form method="dialog" class="modal-box">
-            <div class="modal-icon"><i class="fa-solid fa-trash-can"></i></div>
-            <h3 class="modal-title">Delete movie?</h3>
-            <p class="modal-text" id="confirm-message"></p>
-            <div class="modal-actions">
-                <button type="submit" value="cancel" class="btn btn-ghost">Cancel</button>
-                <button type="submit" value="confirm" class="btn btn-danger">Yes, delete</button>
-            </div>
-        </form>
-    </dialog>
+    {{-- Flash notifications --}}
+    <div class="toast-stack" aria-live="polite">
+        @if (session('success'))
+            <x-alert type="success" :timeout="5000" class="toast">{{ session('success') }}</x-alert>
+        @endif
+        @if (session('error'))
+            <x-alert type="error" :timeout="8000" class="toast">{{ session('error') }}</x-alert>
+        @endif
+    </div>
 
-    <script>
-        document.addEventListener('submit', function (event) {
-            const form = event.target;
-            if (!form.dataset.confirm) {
-                return;
-            }
-            event.preventDefault();
-
-            const dialog = document.getElementById('confirm-dialog');
-            if (!dialog || typeof dialog.showModal !== 'function') {
-                if (window.confirm(form.dataset.confirm)) {
-                    form.submit();
-                }
-                return;
-            }
-
-            document.getElementById('confirm-message').textContent = form.dataset.confirm;
-            dialog.returnValue = '';
-            dialog.showModal();
-            dialog.addEventListener('close', function () {
-                if (dialog.returnValue === 'confirm') {
-                    form.submit();
-                }
-            }, { once: true });
-        });
-    </script>
-
-    @stack('scripts')
+    {{-- Shared confirmation dialog: used by every form that has data-confirm --}}
+    <x-modal id="confirm-dialog" icon="trash-can" title="Are you sure?">
+        <p class="modal-text" data-confirm-message></p>
+        <x-slot:actions>
+            <x-button variant="ghost" value="cancel">Cancel</x-button>
+            <x-button variant="danger" value="confirm" icon="trash-can">Yes, delete</x-button>
+        </x-slot:actions>
+    </x-modal>
 </body>
 </html>

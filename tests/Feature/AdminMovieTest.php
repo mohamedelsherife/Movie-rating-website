@@ -116,6 +116,172 @@ class AdminMovieTest extends TestCase
         $this->assertDatabaseCount('movies', 0);
     }
 
+    // ---------- Director: select existing OR create new ----------
+
+    private function validMovie(array $overrides = []): array
+    {
+        return array_merge([
+            'title'        => 'The Prestige',
+            'release_year' => 2006,
+            'genre_ids'    => [$this->drama->id],
+        ], $overrides);
+    }
+
+    public function test_typing_a_new_director_name_creates_the_director(): void
+    {
+        $this->post(route('admin.movies.store'), $this->validMovie([
+            'director_name' => '  Denis   Villeneuve ',
+        ]))->assertRedirect(route('admin.movies.index'));
+
+        $director = Director::where('name', 'Denis Villeneuve')->first();
+        $this->assertNotNull($director, 'New director should be stored with normalised spacing');
+        $this->assertSame($director->id, Movie::where('title', 'The Prestige')->value('director_id'));
+        $this->assertDatabaseCount('directors', 3);
+    }
+
+    public function test_typing_an_existing_director_name_reuses_it_without_duplicates(): void
+    {
+        $this->post(route('admin.movies.store'), $this->validMovie([
+            'director_name' => 'christopher   NOLAN',
+        ]))->assertRedirect(route('admin.movies.index'));
+
+        $this->assertDatabaseCount('directors', 2);
+        $this->assertSame($this->nolan->id, Movie::where('title', 'The Prestige')->value('director_id'));
+    }
+
+    public function test_selected_director_id_takes_priority_over_typed_text(): void
+    {
+        $this->post(route('admin.movies.store'), $this->validMovie([
+            'director_id'   => $this->spielberg->id,
+            'director_name' => 'Steven Spielberg',
+        ]))->assertRedirect(route('admin.movies.index'));
+
+        $this->assertDatabaseCount('directors', 2);
+        $this->assertSame($this->spielberg->id, Movie::where('title', 'The Prestige')->value('director_id'));
+    }
+
+    public function test_director_is_required(): void
+    {
+        $this->post(route('admin.movies.store'), $this->validMovie())
+            ->assertSessionHasErrors(['director_name']);
+
+        $this->assertDatabaseCount('movies', 0);
+    }
+
+    public function test_update_can_switch_to_a_brand_new_director(): void
+    {
+        $movie = $this->makeMovie('Dune', $this->nolan, 2021, [$this->scifi]);
+
+        $this->put(route('admin.movies.update', $movie->id), [
+            'title'         => 'Dune',
+            'director_name' => 'Denis Villeneuve',
+            'release_year'  => 2021,
+            'genre_ids'     => [$this->scifi->id],
+        ])->assertRedirect(route('admin.movies.index'));
+
+        $this->assertSame('Denis Villeneuve', $movie->fresh()->director->name);
+    }
+
+    // ---------- Genres: select existing AND/OR create new ----------
+
+    public function test_new_genres_are_created_and_attached_together_with_existing_ones(): void
+    {
+        $this->post(route('admin.movies.store'), $this->validMovie([
+            'director_id' => $this->nolan->id,
+            'genre_ids'   => [$this->drama->id],
+            'new_genres'  => ['Mystery', ' psychological   thriller '],
+        ]))->assertRedirect(route('admin.movies.index'));
+
+        $movie = Movie::where('title', 'The Prestige')->first();
+        $this->assertEqualsCanonicalizing(
+            ['Drama', 'Mystery', 'psychological thriller'],
+            $movie->genres->pluck('name')->all()
+        );
+        $this->assertDatabaseCount('genres', 5);
+    }
+
+    public function test_new_genre_matching_an_existing_one_is_not_duplicated(): void
+    {
+        $this->post(route('admin.movies.store'), $this->validMovie([
+            'director_id' => $this->nolan->id,
+            'genre_ids'   => [$this->drama->id],
+            'new_genres'  => ['sci-fi', 'DRAMA'],
+        ]))->assertRedirect(route('admin.movies.index'));
+
+        $this->assertDatabaseCount('genres', 3);
+        $this->assertEqualsCanonicalizing(
+            [$this->drama->id, $this->scifi->id],
+            Movie::where('title', 'The Prestige')->first()->genres->pluck('id')->all()
+        );
+    }
+
+    public function test_only_new_genres_is_enough(): void
+    {
+        $this->post(route('admin.movies.store'), [
+            'title'        => 'Coco',
+            'director_id'  => $this->nolan->id,
+            'release_year' => 2017,
+            'new_genres'   => ['Family'],
+        ])->assertRedirect(route('admin.movies.index'));
+
+        $this->assertSame(['Family'], Movie::where('title', 'Coco')->first()->genres->pluck('name')->all());
+    }
+
+    public function test_at_least_one_genre_is_required(): void
+    {
+        $this->post(route('admin.movies.store'), [
+            'title'        => 'Coco',
+            'director_id'  => $this->nolan->id,
+            'release_year' => 2017,
+        ])->assertSessionHasErrors(['genre_ids']);
+    }
+
+    public function test_failed_validation_does_not_create_a_director(): void
+    {
+        $this->post(route('admin.movies.store'), [
+            'title'         => '',
+            'director_name' => 'Someone New',
+            'release_year'  => 2017,
+            'genre_ids'     => [$this->drama->id],
+        ])->assertSessionHasErrors(['title']);
+
+        $this->assertDatabaseMissing('directors', ['name' => 'Someone New']);
+    }
+
+    // ---------- Components ----------
+
+    public function test_form_uses_searchable_director_combobox_with_create_option(): void
+    {
+        $this->get(route('admin.movies.create'))
+            ->assertSee('data-combobox', false)
+            ->assertSee('data-creatable', false)
+            ->assertSee('name="director_name"', false)
+            ->assertSee('name="director_id"', false)
+            ->assertSee('data-genre-picker', false)
+            ->assertDontSee('<select', false);
+    }
+
+    public function test_filter_comboboxes_show_the_active_selection(): void
+    {
+        $this->seedCatalogue();
+
+        $this->get(route('admin.movies.index', ['director_id' => $this->spielberg->id, 'genre_id' => $this->drama->id]))
+            ->assertSee('value="Steven Spielberg"', false)
+            ->assertSee('value="Drama"', false)
+            ->assertSee('class="filter-chip"', false)
+            ->assertSee('Reset all')
+            ->assertDontSee('<select', false);
+    }
+
+    public function test_edit_form_prefills_director_combobox(): void
+    {
+        $movie = $this->makeMovie('Inception', $this->nolan, 2010, [$this->action]);
+
+        $this->get(route('admin.movies.edit', $movie->id))
+            ->assertSee('value="Christopher Nolan"', false)
+            ->assertSee('name="director_id" value="' . $this->nolan->id . '"', false);
+    }
+
     // ---------- Edit ----------
 
     public function test_edit_form_is_prefilled(): void
@@ -175,7 +341,7 @@ class AdminMovieTest extends TestCase
         $this->makeMovie('Inception', $this->nolan, 2010, [$this->action]);
 
         $this->get(route('admin.movies.index'))
-            ->assertSee('data-confirm="&quot;Inception&quot; will be permanently removed', false)
+            ->assertSee('data-confirm="“Inception” will be permanently removed', false)
             ->assertSee('id="confirm-dialog"', false);
     }
 

@@ -1,6 +1,8 @@
-<article class="movie-card">
+@props(['movie'])
+
+<article {{ $attributes->class('movie-card') }}>
     <div class="movie-poster" style="--hue: {{ ($movie->id * 47) % 360 }}">
-        @if($movie->poster)
+        @if ($movie->poster)
             <img src="{{ asset('storage/movies/' . $movie->poster) }}" alt="{{ $movie->title }} poster" loading="lazy">
         @else
             <div class="poster-fallback" aria-hidden="true">
@@ -13,25 +15,23 @@
 
     <div class="movie-body">
         <h3 class="movie-title" title="{{ $movie->title }}">{{ $movie->title }}</h3>
-        <p class="movie-director"><i class="fa-solid fa-video"></i> {{ $movie->director->name }}</p>
+        <p class="movie-director"><i class="fa-solid fa-video" aria-hidden="true"></i> {{ $movie->director->name }}</p>
 
-        <ul class="genre-list">
-            @foreach($movie->genres as $genre)
+        <ul class="genre-list" aria-label="Genres">
+            @foreach ($movie->genres as $genre)
                 <li class="genre-pill">{{ $genre->name }}</li>
             @endforeach
         </ul>
 
         <div class="movie-actions">
-            <a href="{{ route('admin.movies.edit', $movie->id) }}" class="btn btn-sm btn-ghost">
-                <i class="fa-solid fa-pen"></i> Edit
-            </a>
+            <x-button :href="route('admin.movies.edit', $movie->id)" variant="ghost" size="sm" icon="pen">Edit</x-button>
+
             <form action="{{ route('admin.movies.destroy', $movie->id) }}" method="POST"
-                  data-confirm="&quot;{{ $movie->title }}&quot; will be permanently removed from the catalogue.">
+                  data-confirm="“{{ $movie->title }}” will be permanently removed from the catalogue."
+                  data-confirm-title="Delete this movie?">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn btn-sm btn-danger-soft">
-                    <i class="fa-solid fa-trash-can"></i> Delete
-                </button>
+                <x-button variant="danger-soft" size="sm" icon="trash-can">Delete</x-button>
             </form>
         </div>
     </div>
