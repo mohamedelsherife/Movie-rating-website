@@ -16,6 +16,8 @@
         ])->filter(fn ($chip) => filled($chip['label']));
     @endphp
 
+    <x-content-type-switch active="movies" />
+
     <x-page-header eyebrow="Catalogue" title="Movies" subtitle="Browse, search and curate every title on the platform.">
         <x-slot:actions>
             <x-button :href="route('admin.movies.create')" icon="plus">Add movie</x-button>

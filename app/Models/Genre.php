@@ -18,6 +18,11 @@ class Genre extends Model
         return $this->belongsToMany(Movie::class, 'movie_genres')->withTimestamps();
     }
 
+    public function series()
+    {
+        return $this->belongsToMany(Series::class, 'series_genres')->withTimestamps();
+    }
+
     /**
      * Return the genre with this name, creating it only if it does not exist yet
      * (case-insensitive, extra spaces ignored).

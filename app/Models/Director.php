@@ -18,6 +18,11 @@ class Director extends Model
         return $this->hasMany(Movie::class);
     }
 
+    public function series()
+    {
+        return $this->hasMany(Series::class);
+    }
+
     /**
      * Return the director with this name, creating it only if it does not exist yet.
      * The match ignores letter case and extra spaces, so "christopher  nolan"

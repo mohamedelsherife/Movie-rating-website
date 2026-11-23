@@ -28,6 +28,9 @@
                 <a href="{{ route('admin.movies.index') }}" class="nav-link {{ request()->routeIs('admin.movies.index', 'admin.movies.edit') ? 'is-active' : '' }}">
                     <i class="fa-solid fa-film"></i><span>Movies</span>
                 </a>
+                <a href="{{ route('admin.series.index') }}" class="nav-link {{ request()->routeIs('admin.series.*') ? 'is-active' : '' }}">
+                    <i class="fa-solid fa-tv"></i><span>TV Series</span>
+                </a>
                 <a href="{{ route('admin.movies.create') }}" class="nav-link nav-cta {{ request()->routeIs('admin.movies.create') ? 'is-active' : '' }}">
                     <i class="fa-solid fa-plus"></i><span>Add Movie</span>
                 </a>

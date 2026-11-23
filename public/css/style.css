@@ -1734,3 +1734,199 @@ a.stat-card:hover {
         transition: none !important;
     }
 }
+
+/* =========================================================
+   TV Series additions
+   ========================================================= */
+
+/* Content type switch (<x-content-type-switch>) */
+.type-switch {
+    display: inline-flex;
+    gap: 4px;
+    margin-bottom: 22px;
+    padding: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+}
+
+.type-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    border-radius: 999px;
+    transition: color 0.2s, background 0.2s;
+}
+
+.type-tab:hover {
+    color: var(--text);
+}
+
+.type-tab.is-active {
+    color: var(--accent-ink);
+    background: var(--accent);
+    box-shadow: 0 6px 20px -8px var(--accent-glow);
+}
+
+.type-count {
+    min-width: 22px;
+    padding: 1px 7px;
+    font-size: 12px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+}
+
+.type-tab.is-active .type-count {
+    background: rgba(0, 0, 0, 0.16);
+}
+
+/* Dashboard content type filter */
+.segmented {
+    display: inline-flex;
+    gap: 4px;
+    margin-bottom: 28px;
+    padding: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+}
+
+.segment {
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+}
+
+.segment:hover {
+    color: var(--text);
+}
+
+.segment.is-active {
+    color: var(--text);
+    background: var(--surface-3);
+}
+
+.stats.stats-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+/* Toolbar with one extra filter (series: status) */
+.toolbar.toolbar-wide {
+    grid-template-columns: minmax(220px, 2fr) repeat(4, minmax(140px, 1fr)) auto;
+}
+
+/* Series card (<x-series-card>) */
+.type-chip {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+    color: var(--accent-ink);
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 6px 16px -6px var(--accent-glow);
+}
+
+.series-card .year-chip {
+    white-space: nowrap;
+}
+
+.series-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 10px;
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-soft);
+}
+
+.status-dot {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--muted);
+}
+
+.status-dot::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    background: var(--muted);
+    border-radius: 50%;
+}
+
+.status-dot.is-ongoing {
+    color: var(--success);
+}
+
+.status-dot.is-ongoing::before {
+    background: var(--success);
+    box-shadow: 0 0 8px var(--success);
+}
+
+@media (max-width: 1100px) {
+    .toolbar.toolbar-wide {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .toolbar.toolbar-wide .toolbar-search,
+    .toolbar.toolbar-wide .toolbar-submit {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 1000px) {
+    .stats.stats-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .toolbar.toolbar-wide {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .toolbar.toolbar-wide {
+        grid-template-columns: 1fr;
+    }
+
+    .type-switch {
+        display: flex;
+    }
+
+    .type-tab {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats.stats-4 {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .type-chip {
+        width: 24px;
+        height: 24px;
+        font-size: 10px;
+    }
+
+    .series-card .year-chip {
+        padding: 3px 8px;
+        font-size: 10px;
+    }
+}
