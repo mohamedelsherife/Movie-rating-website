@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Admin') · CineRate</title>
+    <meta name="description" content="CineRate admin: manage the movies and TV series in the catalogue.">
+    <meta name="theme-color" content="#09090d">
+    <meta name="robots" content="noindex">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,32 +16,34 @@
     <script src="{{ asset('js/admin.js') }}" defer></script>
 </head>
 <body>
-    <nav class="navbar">
+    <a href="#main" class="skip-link">Skip to content</a>
+
+    <nav class="navbar" aria-label="Main">
         <div class="container navbar-inner">
             <a href="{{ route('admin.dashboard') }}" class="brand">
-                <span class="brand-mark"><i class="fa-solid fa-clapperboard"></i></span>
+                <span class="brand-mark" aria-hidden="true"><i class="fa-solid fa-clapperboard"></i></span>
                 <span class="brand-name">CineRate</span>
                 <span class="brand-tag">Admin</span>
             </a>
 
             <div class="nav-links">
-                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'is-active' : '' }}">
-                    <i class="fa-solid fa-chart-simple"></i><span>Dashboard</span>
+                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'is-active' : '' }}" @if (request()->routeIs('admin.dashboard')) aria-current="page" @endif>
+                    <i class="fa-solid fa-chart-simple" aria-hidden="true"></i><span>Dashboard</span>
                 </a>
-                <a href="{{ route('admin.movies.index') }}" class="nav-link {{ request()->routeIs('admin.movies.index', 'admin.movies.edit') ? 'is-active' : '' }}">
-                    <i class="fa-solid fa-film"></i><span>Movies</span>
+                <a href="{{ route('admin.movies.index') }}" class="nav-link {{ request()->routeIs('admin.movies.index', 'admin.movies.edit') ? 'is-active' : '' }}" @if (request()->routeIs('admin.movies.index', 'admin.movies.edit')) aria-current="page" @endif>
+                    <i class="fa-solid fa-film" aria-hidden="true"></i><span>Movies</span>
                 </a>
-                <a href="{{ route('admin.series.index') }}" class="nav-link {{ request()->routeIs('admin.series.*') ? 'is-active' : '' }}">
-                    <i class="fa-solid fa-tv"></i><span>TV Series</span>
+                <a href="{{ route('admin.series.index') }}" class="nav-link {{ request()->routeIs('admin.series.*') ? 'is-active' : '' }}" @if (request()->routeIs('admin.series.*')) aria-current="page" @endif>
+                    <i class="fa-solid fa-tv" aria-hidden="true"></i><span>TV Series</span>
                 </a>
-                <a href="{{ route('admin.movies.create') }}" class="nav-link nav-cta {{ request()->routeIs('admin.movies.create') ? 'is-active' : '' }}">
-                    <i class="fa-solid fa-plus"></i><span>Add Movie</span>
+                <a href="{{ route('admin.movies.create') }}" class="nav-link nav-cta {{ request()->routeIs('admin.movies.create') ? 'is-active' : '' }}" @if (request()->routeIs('admin.movies.create')) aria-current="page" @endif>
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i><span>Add Movie</span>
                 </a>
             </div>
         </div>
     </nav>
 
-    <main class="container main">
+    <main class="container main" id="main" tabindex="-1">
         @yield('content')
     </main>
 

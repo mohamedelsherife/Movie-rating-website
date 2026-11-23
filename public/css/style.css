@@ -33,7 +33,12 @@
     --radius-lg: 20px;
     --shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.7);
     --shadow-lift: 0 28px 60px -20px rgba(0, 0, 0, 0.85);
-    --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+    --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --ease-enter: cubic-bezier(0.22, 1, 0.36, 1);
+    --m-in: 150ms;
+    --m-out: 120ms;
+    --m-press: 90ms;
+    --m-image: 600ms;
 }
 
 /* ---------- Base ---------- */
@@ -45,6 +50,7 @@
 
 html {
     -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 88px;
 }
 
 body {
@@ -58,7 +64,7 @@ body {
     color: var(--text);
     background:
         radial-gradient(900px 480px at 85% -120px, rgba(242, 181, 68, 0.09), transparent 70%),
-        radial-gradient(700px 420px at -10% 10%, rgba(120, 90, 255, 0.06), transparent 70%),
+        radial-gradient(700px 420px at -10% 10%, rgba(226, 104, 64, 0.05), transparent 70%),
         var(--bg);
     background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
@@ -292,11 +298,20 @@ textarea {
     border: 1px solid transparent;
     border-radius: 11px;
     cursor: pointer;
-    transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s, box-shadow 0.2s;
+    transition: background var(--m-out) var(--ease), border-color var(--m-out) var(--ease),
+                color var(--m-out) var(--ease), transform var(--m-out) var(--ease), box-shadow var(--m-out) var(--ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .btn:hover {
+        transform: translateY(-1px);
+        transition-duration: var(--m-in);
+    }
 }
 
 .btn:active {
-    transform: translateY(1px);
+    transform: translateY(1px) scale(0.985);
+    transition-duration: var(--m-press);
 }
 
 .btn-primary {
@@ -904,11 +919,11 @@ textarea {
     border: 1px solid var(--border);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
-    transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s;
+    transition: transform var(--m-out) var(--ease), box-shadow var(--m-out) var(--ease), border-color var(--m-out);
 }
 
 .movie-card:hover {
-    transform: translateY(-6px);
+    transform: translateY(-2px);
     border-color: rgba(242, 181, 68, 0.35);
     box-shadow: var(--shadow-lift), 0 0 0 1px rgba(242, 181, 68, 0.08);
 }
@@ -926,11 +941,11 @@ textarea {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.6s var(--ease);
+    transition: transform var(--m-image) var(--ease);
 }
 
 .movie-card:hover .movie-poster img {
-    transform: scale(1.05);
+    transform: scale(1.03);
 }
 
 /* soft fade from poster into card body */
@@ -964,7 +979,7 @@ textarea {
 }
 
 .movie-card:hover .poster-monogram {
-    transform: scale(1.06);
+    transform: scale(1.03);
 }
 
 .poster-note {
@@ -1491,7 +1506,7 @@ textarea.input {
 
 a.stat-card:hover {
     border-color: rgba(242, 181, 68, 0.35);
-    transform: translateY(-3px);
+    transform: translateY(-2px);
 }
 
 .stat-icon {
@@ -1654,9 +1669,18 @@ a.stat-card:hover {
         padding-top: 28px;
     }
 
-    .nav-link span,
     .brand-tag {
         display: none;
+    }
+
+    /* Icon-only on phones, but the label stays for screen readers. */
+    .nav-link span {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
     }
 
     .nav-link {
@@ -1928,5 +1952,165 @@ a.stat-card:hover {
     .series-card .year-chip {
         padding: 3px 8px;
         font-size: 10px;
+    }
+}
+
+/* =========================================================
+   Interaction layer (tasteskill motion rules)
+   Hover in 150ms / out 120ms / press 90ms, card lift 2px,
+   photo zoom 1.03, entrance once on load, nothing on scroll.
+   ========================================================= */
+
+/* Hover-in is quicker to answer than hover-out. */
+@media (hover: hover) and (pointer: fine) {
+    .movie-card:hover,
+    a.stat-card:hover {
+        transition-duration: var(--m-in);
+    }
+}
+
+/* Touch screens: no sticky hover lift. Keyboard focus shows the same state. */
+@media (hover: none) {
+    .movie-card:hover,
+    a.stat-card:hover,
+    .movie-card:hover .movie-poster img,
+    .movie-card:hover .poster-monogram {
+        transform: none;
+    }
+}
+
+.movie-card:focus-within {
+    border-color: rgba(242, 181, 68, 0.35);
+}
+
+#main:focus {
+    outline: none;
+}
+
+/* Skip link: the first thing Tab reaches. */
+.skip-link {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 200;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent-ink);
+    background: var(--accent);
+    border-radius: 10px;
+    transform: translateY(-160%);
+}
+
+.skip-link:focus {
+    transform: none;
+}
+
+/* Text links: a 1px line draws left to right under the word. */
+.clear-link,
+.back-link,
+.footer-inner a {
+    background: linear-gradient(currentColor, currentColor) no-repeat 100% 100% / 0 1px;
+    transition: color var(--m-out) var(--ease), background-size var(--m-out) var(--ease);
+}
+
+.clear-link:hover,
+.back-link:hover,
+.clear-link:focus-visible,
+.back-link:focus-visible {
+    background-position: 0 100%;
+    background-size: 100% 1px;
+    transition-duration: var(--m-in);
+}
+
+/* Arrows nudge 3px toward where they lead. */
+.clear-link .fa-arrow-right,
+.back-link .fa-arrow-left {
+    transition: transform var(--m-out) var(--ease);
+}
+
+.clear-link:hover .fa-arrow-right { transform: translateX(3px); }
+.back-link:hover .fa-arrow-left { transform: translateX(-3px); }
+
+/* Filter chips and tabs answer the pointer too. */
+.filter-chip:hover {
+    background: rgba(242, 181, 68, 0.18);
+    border-color: rgba(242, 181, 68, 0.45);
+}
+
+.filter-chip:active,
+.type-tab:active,
+.segment:active,
+.genre-stat:active {
+    transform: scale(0.985);
+}
+
+/* Page heading enters once on load: eyebrow, title, subtitle, actions. */
+@keyframes enter-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+}
+
+[data-enter] .eyebrow,
+[data-enter] .page-title,
+[data-enter] .page-sub,
+[data-enter] .page-actions {
+    animation: enter-up 0.7s var(--ease-enter) both;
+}
+
+[data-enter] .page-title   { animation-delay: 0.06s; }
+[data-enter] .page-sub     { animation-delay: 0.16s; }
+[data-enter] .page-actions { animation-delay: 0.26s; }
+
+/* Touch: every control outside running text is at least 44px tall. */
+@media (pointer: coarse) {
+    .btn,
+    .nav-link,
+    .type-tab,
+    .segment,
+    .filter-chip,
+    .genre-stat,
+    .clear-link,
+    .back-link {
+        min-height: 44px;
+    }
+
+    .nav-link,
+    .segment,
+    .filter-chip,
+    .clear-link,
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    /* The clear button sits inside the field: widen its hit area, not its look. */
+    .combo-clear::after {
+        content: "";
+        position: absolute;
+        inset: -11px;
+    }
+
+    .genre-toggle span {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+    }
+}
+
+/* Header actions keep their spacing when they wrap or stack. */
+.page-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.section-head .clear-link {
+    white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+    .page-actions {
+        flex-direction: column;
     }
 }
