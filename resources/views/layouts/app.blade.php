@@ -15,9 +15,11 @@
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <script src="{{ asset('js/admin.js') }}" defer></script>
 </head>
-<body>
+<body class="@yield('body-class')">
     <a href="#main" class="skip-link">Skip to content</a>
 
+    {{-- Navigation and footer are only shown to a logged-in admin (not on the login page). --}}
+    @auth('admin')
     <nav class="navbar" aria-label="Main">
         <div class="container navbar-inner">
             <a href="{{ route('admin.dashboard') }}" class="brand">
@@ -39,20 +41,30 @@
                 <a href="{{ route('admin.movies.create') }}" class="nav-link nav-cta {{ request()->routeIs('admin.movies.create') ? 'is-active' : '' }}" @if (request()->routeIs('admin.movies.create')) aria-current="page" @endif>
                     <i class="fa-solid fa-plus" aria-hidden="true"></i><span>Add Movie</span>
                 </a>
+
+                <form action="{{ route('admin.logout') }}" method="POST" class="nav-logout">
+                    @csrf
+                    <button type="submit" class="nav-link" title="Log out {{ auth('admin')->user()->name }}">
+                        <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i><span>Log out</span>
+                    </button>
+                </form>
             </div>
         </div>
     </nav>
+    @endauth
 
     <main class="container main" id="main" tabindex="-1">
         @yield('content')
     </main>
 
+    @auth('admin')
     <footer class="footer">
         <div class="container footer-inner">
             <span><i class="fa-solid fa-clapperboard"></i> CineRate</span>
             <span>Movie Rating Platform · Admin Panel · {{ date('Y') }}</span>
         </div>
     </footer>
+    @endauth
 
     {{-- Flash notifications --}}
     <div class="toast-stack" aria-live="polite">

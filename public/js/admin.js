@@ -310,6 +310,21 @@
     }
 
     /* ---------------------------------------------------------------
+       Show / hide password  (login page)
+       --------------------------------------------------------------- */
+    document.addEventListener('click', (event) => {
+        const toggle = event.target.closest('[data-password-toggle]');
+        if (!toggle) return;
+        const input = toggle.closest('[data-password-field]').querySelector('input');
+        const show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        toggle.setAttribute('aria-pressed', String(show));
+        toggle.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+        toggle.querySelector('i').className = show ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+        input.focus();
+    });
+
+    /* ---------------------------------------------------------------
        Confirmation dialog for forms with data-confirm  (<x-modal>)
        --------------------------------------------------------------- */
     document.addEventListener('submit', (event) => {

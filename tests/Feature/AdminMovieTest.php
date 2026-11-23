@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Admin;
 use App\Models\Director;
 use App\Models\Genre;
 use App\Models\Movie;
@@ -24,6 +25,9 @@ class AdminMovieTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Admin pages require a logged-in admin.
+        $this->actingAs(Admin::create(['name' => 'Admin', 'email' => 'admin', 'password' => 'secret']), 'admin');
 
         $this->nolan = Director::create(['name' => 'Christopher Nolan']);
         $this->spielberg = Director::create(['name' => 'Steven Spielberg']);

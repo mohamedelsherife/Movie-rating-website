@@ -7,11 +7,49 @@ use App\Models\Genre;
 use App\Models\Movie;
 use App\Models\Series;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
     /** Content type filter options for the dashboard. */
     private const TYPES = ['all' => 'All', 'movies' => 'Movies', 'series' => 'TV Series'];
+
+    public function loginForm()
+    {
+        // A few real posters from the catalogue for the background wall.
+        $posters = Movie::whereNotNull('poster')->inRandomOrder()->take(12)->pluck('poster');
+
+        return view('admin.login', compact('posters'));
+    }
+
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email'    => 'required|string|max:255',
+            'password' => 'required|string',
+        ]);
+
+        // Checks the hashed password stored in the admins table.
+        if (Auth::guard('admin')->attempt($credentials, $request->boolean('remember'))) {
+            $request->session()->regenerate();
+
+            return redirect()->intended(route('admin.dashboard'));
+        }
+
+        return back()->withErrors([
+            'login' => 'Invalid email or password. Please try again.',
+        ])->onlyInput('email', 'remember');
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::guard('admin')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('admin.login')->with('success', 'You have been logged out.');
+    }
 
     public function dashboard(Request $request)
     {
