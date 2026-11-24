@@ -1,59 +1,51 @@
-<div dir="rtl">
+# Movie Rating Website
 
-# موقع تقييم الأفلام (Movie Rating Website)
+A web application built with **Laravel 13** for managing movies and TV series. It currently includes an admin panel where an administrator can create, edit, and delete movies and series, along with their directors, genres, and poster images.
 
-تطبيق ويب مبني بـ **Laravel 13** لإدارة الأفلام والمسلسلات. يحتوي حالياً على لوحة تحكم للمشرف (Admin) تتيح إضافة الأفلام والمسلسلات وتعديلها وحذفها، مع المخرجين والتصنيفات وصور البوستر.
+## Features
 
-## المميزات
+- Admin authentication using a dedicated `admin` guard, with "Remember me" support.
+- Dashboard showing content statistics.
+- **Movies** management: title, director, release year, description, genres, and poster.
+- **Series** management: title, director, start and end year (empty = still running), number of seasons and episodes, description, genres, and poster.
+- Pick an existing director or type a new name, and it is created automatically.
+- Pick existing genres or add new ones directly from the same form.
+- Poster uploads (jpg, jpeg, png, webp up to 10 MB). Old posters are deleted automatically when a record is updated or removed.
+- Seeders with sample directors, genres, movies, and series.
 
-- تسجيل دخول خاص بالمشرف باستخدام guard منفصل (`admin`) مع خيار "تذكرني".
-- لوحة تحكم (Dashboard) تعرض إحصائيات المحتوى.
-- إدارة **الأفلام**: العنوان، المخرج، سنة الإصدار، الوصف، التصنيفات، صورة البوستر.
-- إدارة **المسلسلات**: العنوان، المخرج، سنة البداية والنهاية (فارغة = ما زال يُعرض)، عدد المواسم والحلقات، الوصف، التصنيفات، البوستر.
-- اختيار مخرج موجود أو كتابة اسم مخرج جديد يُضاف تلقائياً.
-- اختيار تصنيفات موجودة أو إضافة تصنيفات جديدة من نفس النموذج.
-- رفع صور البوستر (jpg, jpeg, png, webp حتى 10MB) وحذف الصورة القديمة تلقائياً عند التعديل أو الحذف.
-- بيانات تجريبية (Seeders) للمخرجين والتصنيفات والأفلام والمسلسلات.
+## Tech Stack
 
-## التقنيات المستخدمة
-
-| الجزء | التقنية |
+| Layer | Technology |
 |---|---|
-| Backend | PHP 8.3+، Laravel 13 |
-| قاعدة البيانات | MySQL |
-| Frontend | Blade Components، Tailwind CSS 4، Vite |
-| الاختبارات | Pest |
+| Backend | PHP 8.3+, Laravel 13 |
+| Database | MySQL |
+| Frontend | Blade components, Tailwind CSS 4, Vite |
+| Testing | Pest |
 
-## المتطلبات
+## Requirements
 
-- PHP 8.3 أو أحدث
+- PHP 8.3 or newer
 - Composer
-- Node.js و npm
+- Node.js and npm
 - MySQL
 
-## التثبيت والتشغيل
-
-</div>
+## Installation
 
 ```bash
-# 1. استنساخ المشروع
+# 1. Clone the repository
 git clone https://github.com/mohamedelsherife/Movie-rating-website.git
 cd Movie-rating-website
 
-# 2. تثبيت الحزم
+# 2. Install dependencies
 composer install
 npm install
 
-# 3. إعداد ملف البيئة
+# 3. Set up the environment file
 cp .env.example .env
 php artisan key:generate
 ```
 
-<div dir="rtl">
-
-4. أنشئ قاعدة بيانات باسم `movie_rating_website` في MySQL، ثم عدّل بيانات الاتصال في ملف `.env` إذا لزم الأمر:
-
-</div>
+4. Create a MySQL database named `movie_rating_website`, then update the connection settings in `.env` if needed:
 
 ```env
 DB_CONNECTION=mysql
@@ -65,32 +57,28 @@ DB_PASSWORD=
 ```
 
 ```bash
-# 5. إنشاء الجداول وإضافة البيانات التجريبية
+# 5. Run the migrations and seed sample data
 php artisan migrate --seed
 
-# 6. ربط مجلد التخزين لعرض صور البوستر
+# 6. Link the storage folder so poster images can be served
 php artisan storage:link
 
-# 7. تشغيل المشروع (السيرفر + Vite + الـ queue معاً)
+# 7. Start the app (server + Vite + queue together)
 composer run dev
 ```
 
-<div dir="rtl">
+Then open `http://localhost:8000` in your browser.
 
-بعد التشغيل افتح المتصفح على: `http://localhost:8000`
+## Admin Account
 
-## حساب المشرف
+A default admin account is created when the seeders run:
 
-يتم إنشاء حساب المشرف الافتراضي تلقائياً عند تشغيل الـ seeders:
-
-| الحقل | القيمة |
+| Field | Value |
 |---|---|
-| البريد / اسم المستخدم | `admin` |
-| كلمة المرور | `admin` |
+| Email / username | `admin` |
+| Password | `admin` |
 
-> ⚠️ يُنصح بتغيير هذه البيانات. أضف القيم التالية إلى ملف `.env` ثم شغّل الأمر بعدها:
-
-</div>
+> ⚠️ You should change these credentials. Add the following to your `.env` file, then run the command below:
 
 ```env
 ADMIN_NAME=Administrator
@@ -102,72 +90,60 @@ ADMIN_PASSWORD=your-strong-password
 php artisan db:seed --class=AdminSeeder
 ```
 
-<div dir="rtl">
+## Routes
 
-## المسارات (Routes)
-
-| الطريقة | المسار | الوصف |
+| Method | URI | Description |
 |---|---|---|
-| GET | `/` | تحويل إلى `/admin` |
-| GET / POST | `/admin/login` | تسجيل دخول المشرف |
-| POST | `/admin/logout` | تسجيل الخروج |
-| GET | `/admin` | لوحة التحكم |
-| GET, POST, PUT, DELETE | `/admin/movies` | إدارة الأفلام |
-| GET, POST, PUT, DELETE | `/admin/series` | إدارة المسلسلات |
+| GET | `/` | Redirects to `/admin` |
+| GET / POST | `/admin/login` | Admin login |
+| POST | `/admin/logout` | Logout |
+| GET | `/admin` | Dashboard |
+| GET, POST, PUT, DELETE | `/admin/movies` | Manage movies |
+| GET, POST, PUT, DELETE | `/admin/series` | Manage series |
 
-جميع مسارات `/admin` (عدا صفحة الدخول) تتطلب تسجيل دخول المشرف.
+Every `/admin` route except the login page requires a logged-in admin.
 
-## هيكل قاعدة البيانات
+## Database Schema
 
-| الجدول | الوصف |
+| Table | Description |
 |---|---|
-| `admins` | حسابات المشرفين |
-| `directors` | المخرجون (اسم فريد) |
-| `genres` | التصنيفات (اسم فريد) |
-| `movies` | الأفلام (مرتبطة بمخرج) |
-| `series` | المسلسلات (مرتبطة بمخرج) |
-| `movie_genres` | ربط الأفلام بالتصنيفات (many-to-many) |
-| `series_genres` | ربط المسلسلات بالتصنيفات (many-to-many) |
+| `admins` | Admin accounts |
+| `directors` | Directors (unique name) |
+| `genres` | Genres (unique name) |
+| `movies` | Movies (belong to a director) |
+| `series` | Series (belong to a director) |
+| `movie_genres` | Movie ↔ genre pivot (many-to-many) |
+| `series_genres` | Series ↔ genre pivot (many-to-many) |
 
-## هيكل المشروع
-
-</div>
+## Project Structure
 
 ```
 app/
 ├── Http/Controllers/
-│   ├── AdminController.php    # الدخول والخروج ولوحة التحكم
-│   ├── MovieController.php    # CRUD للأفلام
-│   └── SeriesController.php   # CRUD للمسلسلات
+│   ├── AdminController.php    # Login, logout, and dashboard
+│   ├── MovieController.php    # Movie CRUD
+│   └── SeriesController.php   # Series CRUD
 └── Models/                    # Admin, Director, Genre, Movie, Series, User
 database/
 ├── migrations/
-└── seeders/                   # بيانات تجريبية + حساب المشرف
+└── seeders/                   # Sample data + admin account
 resources/views/
-├── layouts/app.blade.php      # القالب الرئيسي (navbar + footer)
-├── admin/                     # صفحات لوحة التحكم
-└── components/                # مكونات Blade قابلة لإعادة الاستخدام
+├── layouts/app.blade.php      # Main layout (navbar + footer)
+├── admin/                     # Admin panel pages
+└── components/                # Reusable Blade components
 routes/web.php
 ```
 
-<div dir="rtl">
-
-## أوامر مفيدة
-
-</div>
+## Useful Commands
 
 ```bash
-composer run dev          # تشغيل بيئة التطوير
-composer run test         # تشغيل الاختبارات
-npm run build             # بناء ملفات الواجهة للإنتاج
-php artisan migrate:fresh --seed   # إعادة بناء قاعدة البيانات من الصفر
-./vendor/bin/pint         # تنسيق الكود
+composer run dev                   # Start the development environment
+composer run test                  # Run the test suite
+npm run build                      # Build frontend assets for production
+php artisan migrate:fresh --seed   # Rebuild the database from scratch
+./vendor/bin/pint                  # Format the code
 ```
 
-<div dir="rtl">
+## License
 
-## الترخيص
-
-هذا المشروع مرخّص تحت رخصة [MIT](https://opensource.org/licenses/MIT).
-
-</div>
+This project is open-sourced under the [MIT license](https://opensource.org/licenses/MIT).
