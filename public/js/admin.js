@@ -310,6 +310,36 @@
     }
 
     /* ---------------------------------------------------------------
+       Mobile navigation menu
+       --------------------------------------------------------------- */
+    function initNavMenu() {
+        const toggle = document.querySelector('[data-nav-toggle]');
+        const menu = document.querySelector('[data-nav-menu]');
+        if (!toggle || !menu) return;
+
+        function setOpen(open) {
+            menu.classList.toggle('is-open', open);
+            toggle.setAttribute('aria-expanded', String(open));
+            toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        }
+
+        toggle.addEventListener('click', () => setOpen(!menu.classList.contains('is-open')));
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && menu.classList.contains('is-open')) {
+                setOpen(false);
+                toggle.focus();
+            }
+        });
+
+        // Close when tapping outside the bar, or when the screen becomes wide again.
+        document.addEventListener('click', (event) => {
+            if (menu.classList.contains('is-open') && !event.target.closest('.navbar')) setOpen(false);
+        });
+        window.matchMedia('(min-width: 861px)').addEventListener('change', () => setOpen(false));
+    }
+
+    /* ---------------------------------------------------------------
        Show / hide password  (login page)
        --------------------------------------------------------------- */
     document.addEventListener('click', (event) => {
@@ -386,6 +416,7 @@
        Init
        --------------------------------------------------------------- */
     document.addEventListener('DOMContentLoaded', () => {
+        initNavMenu();
         document.querySelectorAll('[data-combobox]').forEach(initCombobox);
         document.querySelectorAll('[data-genre-picker]').forEach(initGenrePicker);
         document.querySelectorAll('[data-poster-upload]').forEach(initPosterUpload);
