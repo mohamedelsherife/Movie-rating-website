@@ -121,15 +121,11 @@ textarea {
 }
 
 .brand-mark {
-    display: grid;
-    place-items: center;
-    width: 36px;
-    height: 36px;
-    font-size: 16px;
-    color: var(--accent-ink);
-    background: linear-gradient(140deg, var(--accent-strong), var(--accent));
-    border-radius: 10px;
-    box-shadow: 0 6px 18px -6px var(--accent-glow);
+    display: block;
+    width: auto;
+    height: 40px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
 }
 
 .brand-name {
@@ -186,12 +182,12 @@ textarea {
 }
 
 .nav-brand .brand-mark {
-    transition: transform var(--m-out) var(--ease), box-shadow var(--m-out) var(--ease);
+    transition: transform var(--m-out) var(--ease), filter var(--m-out) var(--ease);
 }
 
 .nav-brand:hover .brand-mark {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 24px -8px var(--accent-glow);
+    transform: translateY(-1px) rotate(-3deg);
+    filter: drop-shadow(0 8px 18px var(--accent-glow));
     transition-duration: var(--m-in);
 }
 

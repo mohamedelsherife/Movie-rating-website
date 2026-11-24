@@ -7,6 +7,7 @@
     <meta name="description" content="CineRate admin: manage the movies and TV series in the catalogue.">
     <meta name="theme-color" content="#09090d">
     <meta name="robots" content="noindex">
+    <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,7 +41,7 @@
     <nav class="navbar" aria-label="Main">
         <div class="container navbar-inner">
             <a href="{{ route('admin.dashboard') }}" class="brand nav-brand" aria-label="CineRate admin dashboard">
-                <span class="brand-mark" aria-hidden="true"><i class="fa-solid fa-clapperboard"></i></span>
+                <img src="{{ asset('images/logo.png') }}" class="brand-mark" alt="" aria-hidden="true">
                 <span class="brand-name">CineRate</span>
                 <span class="brand-tag">Admin</span>
             </a>
@@ -92,7 +93,7 @@
         <div class="container footer-main">
             <div class="footer-brand">
                 <a href="{{ route('admin.dashboard') }}" class="brand">
-                    <span class="brand-mark" aria-hidden="true"><i class="fa-solid fa-clapperboard"></i></span>
+                    <img src="{{ asset('images/logo.png') }}" class="brand-mark" alt="" aria-hidden="true">
                     <span class="brand-name">CineRate</span>
                 </a>
                 <p>The admin side of CineRate, where the movie and TV series catalogue is curated.</p>

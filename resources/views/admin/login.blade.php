@@ -13,7 +13,7 @@
 
     <section class="auth-card">
         <div class="auth-brand">
-            <span class="brand-mark" aria-hidden="true"><i class="fa-solid fa-clapperboard"></i></span>
+            <img src="{{ asset('images/logo.png') }}" class="brand-mark" alt="" aria-hidden="true">
             <span class="brand-name">CineRate</span>
             <span class="brand-tag">Admin</span>
         </div>
