@@ -51,11 +51,15 @@ class AdminLoginTest extends TestCase
             route('admin.movies.create'),
             route('admin.series.index'),
             route('admin.series.create'),
+            route('admin.movies.edit', 1),
+            route('admin.series.edit', 1),
         ] as $url) {
             $this->get($url)->assertRedirect(route('admin.login'));
         }
 
         $this->post(route('admin.movies.store'))->assertRedirect(route('admin.login'));
+        $this->put(route('admin.movies.update', 1))->assertRedirect(route('admin.login'));
+        $this->put(route('admin.series.update', 1))->assertRedirect(route('admin.login'));
         $this->delete(route('admin.series.destroy', 1))->assertRedirect(route('admin.login'));
         $this->get('/')->assertRedirect('/admin');
     }
@@ -135,6 +139,28 @@ class AdminLoginTest extends TestCase
 
         $this->assertGuest('admin');
         $this->get(route('admin.dashboard'))->assertRedirect(route('admin.login'));
+        $this->get(route('admin.movies.index'))->assertRedirect(route('admin.login'));
+        $this->get(route('admin.series.index'))->assertRedirect(route('admin.login'));
+    }
+
+    public function test_admin_stays_logged_in_across_pages_and_refreshes(): void
+    {
+        $this->seedAdmin();
+
+        $this->post(route('admin.login.submit'), ['email' => 'admin', 'password' => 'admin']);
+
+        foreach ([
+            route('admin.movies.index'),
+            route('admin.movies.index'), // refresh
+            route('admin.movies.create'),
+            route('admin.series.index'),
+            route('admin.series.create'),
+            route('admin.dashboard'),
+        ] as $url) {
+            $this->get($url)->assertOk();
+        }
+
+        $this->assertAuthenticated('admin');
     }
 
     public function test_regular_users_cannot_reach_the_admin_panel(): void
