@@ -61,17 +61,19 @@ class AdminController extends Controller
         $directorCount = Director::count();
         $genreCount = Genre::count();
 
-        $latestMovies = $type === 'series' ? collect() : Movie::with(['director', 'genres'])
-            ->latest()
-            ->orderByDesc('id')
-            ->take(4)
-            ->get();
+        // Clicking a popular genre filters the dashboard to every movie and series in it.
+        $activeGenre = $request->filled('genre_id') ? Genre::find($request->genre_id) : null;
 
-        $latestSeries = $type === 'movies' ? collect() : Series::with(['director', 'genres'])
-            ->latest()
-            ->orderByDesc('id')
-            ->take(4)
-            ->get();
+        $titlesQuery = function ($model) use ($activeGenre) {
+            $query = $model::with(['director', 'genres'])->latest()->orderByDesc('id');
+
+            return $activeGenre
+                ? $query->whereHas('genres', fn ($q) => $q->whereKey($activeGenre->id))->get()
+                : $query->take(4)->get();
+        };
+
+        $latestMovies = $type === 'series' ? collect() : $titlesQuery(Movie::class);
+        $latestSeries = $type === 'movies' ? collect() : $titlesQuery(Series::class);
 
         // Popular genres count titles of the selected content type.
         $topGenres = Genre::withCount(['movies', 'series'])->get()
@@ -89,7 +91,7 @@ class AdminController extends Controller
 
         return view('admin.dashboard', compact(
             'type', 'types', 'movieCount', 'seriesCount', 'directorCount', 'genreCount',
-            'latestMovies', 'latestSeries', 'topGenres'
+            'latestMovies', 'latestSeries', 'topGenres', 'activeGenre'
         ));
     }
 }

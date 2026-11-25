@@ -2101,6 +2101,12 @@ a.stat-card:hover::after {
     border-color: rgb(var(--accent-rgb) / 0.35);
 }
 
+.genre-stat.is-active {
+    color: var(--accent);
+    background: rgb(var(--accent-rgb) / 0.1);
+    border-color: var(--accent);
+}
+
 /* ---------- Confirm modal ---------- */
 .modal {
     width: min(420px, calc(100% - 32px));

@@ -324,6 +324,28 @@ class AdminSeriesTest extends TestCase
         $this->get(route('admin.dashboard', ['type' => 'nonsense']))->assertOk()->assertViewHas('type', 'all');
     }
 
+    public function test_dashboard_genre_filter_shows_movies_and_series(): void
+    {
+        $this->makeMovie('Inception');
+        $this->seedCatalogue();
+
+        $response = $this->get(route('admin.dashboard', ['genre_id' => $this->scifi->id]))->assertOk()
+            ->assertSee('Sci-Fi movies (1)')
+            ->assertSee('Sci-Fi TV series (2)');
+
+        $this->assertSame($this->scifi->id, $response->viewData('activeGenre')->id);
+        $this->assertSame(['Inception'], $response->viewData('latestMovies')->pluck('title')->all());
+        $this->assertEqualsCanonicalizing(['Severance', 'Westworld'], $response->viewData('latestSeries')->pluck('title')->all());
+
+        // The type filter still applies on top of the genre.
+        $seriesOnly = $this->get(route('admin.dashboard', ['type' => 'series', 'genre_id' => $this->scifi->id]))->assertOk();
+        $this->assertCount(0, $seriesOnly->viewData('latestMovies'));
+        $this->assertCount(2, $seriesOnly->viewData('latestSeries'));
+
+        // An unknown genre is ignored.
+        $this->get(route('admin.dashboard', ['genre_id' => 999]))->assertOk()->assertViewHas('activeGenre', null);
+    }
+
     public function test_pivot_rejects_duplicate_series_genre_pairs(): void
     {
         $series = $this->makeSeries('Severance', $this->nolan, 2022, null, [$this->scifi]);

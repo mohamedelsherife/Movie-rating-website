@@ -17,10 +17,16 @@
         <x-stat-card icon="masks-theater" :value="$genreCount" label="Genres" />
     </section>
 
+    @php
+        // Query string helpers: the type filter and the genre filter are kept together.
+        $typeParam = $type === 'all' ? [] : ['type' => $type];
+        $genreParam = $activeGenre ? ['genre_id' => $activeGenre->id] : [];
+    @endphp
+
     {{-- Content type filter: narrows the popular genres and recently added sections. --}}
     <nav class="segmented" aria-label="Filter by content type">
         @foreach ($types as $key => $label)
-            <a href="{{ route('admin.dashboard', $key === 'all' ? [] : ['type' => $key]) }}"
+            <a href="{{ route('admin.dashboard', ($key === 'all' ? [] : ['type' => $key]) + $genreParam) }}"
                class="segment {{ $type === $key ? 'is-active' : '' }}"
                @if ($type === $key) aria-current="true" @endif>{{ $label }}</a>
         @endforeach
@@ -31,7 +37,11 @@
             <h2 class="section-title">Popular genres</h2>
             <div class="genre-cloud">
                 @foreach ($topGenres as $genre)
-                    <a href="{{ route($type === 'series' ? 'admin.series.index' : 'admin.movies.index', ['genre_id' => $genre->id]) }}" class="genre-stat">
+                    @php $isActive = $activeGenre?->id === $genre->id; @endphp
+                    {{-- Clicking the active genre again clears the filter. --}}
+                    <a href="{{ route('admin.dashboard', $typeParam + ($isActive ? [] : ['genre_id' => $genre->id])) }}"
+                       class="genre-stat {{ $isActive ? 'is-active' : '' }}"
+                       @if ($isActive) aria-current="true" @endif>
                         <span>{{ $genre->name }}</span>
                         <strong>{{ $genre->titles_count }}</strong>
                     </a>
@@ -43,11 +53,13 @@
     @if ($type !== 'series')
         <section class="section">
             <div class="section-head">
-                <h2 class="section-title">Recently added movies</h2>
-                <a href="{{ route('admin.movies.index') }}" class="clear-link">View all <i class="fa-solid fa-arrow-right"></i></a>
+                <h2 class="section-title">{{ $activeGenre ? "{$activeGenre->name} movies ({$latestMovies->count()})" : 'Recently added movies' }}</h2>
+                <a href="{{ route('admin.movies.index', $genreParam) }}" class="clear-link">View all <i class="fa-solid fa-arrow-right"></i></a>
             </div>
 
-            @if ($latestMovies->isEmpty())
+            @if ($latestMovies->isEmpty() && $activeGenre)
+                <x-empty-state title="No {{ $activeGenre->name }} movies yet." />
+            @elseif ($latestMovies->isEmpty())
                 <x-empty-state title="No movies yet.">
                     <p>Start building the catalogue.</p>
                     <x-button :href="route('admin.movies.create')" icon="plus">Add movie</x-button>
@@ -65,11 +77,13 @@
     @if ($type !== 'movies')
         <section class="section">
             <div class="section-head">
-                <h2 class="section-title">Recently added TV series</h2>
-                <a href="{{ route('admin.series.index') }}" class="clear-link">View all <i class="fa-solid fa-arrow-right"></i></a>
+                <h2 class="section-title">{{ $activeGenre ? "{$activeGenre->name} TV series ({$latestSeries->count()})" : 'Recently added TV series' }}</h2>
+                <a href="{{ route('admin.series.index', $genreParam) }}" class="clear-link">View all <i class="fa-solid fa-arrow-right"></i></a>
             </div>
 
-            @if ($latestSeries->isEmpty())
+            @if ($latestSeries->isEmpty() && $activeGenre)
+                <x-empty-state icon="tv" title="No {{ $activeGenre->name }} TV series yet." />
+            @elseif ($latestSeries->isEmpty())
                 <x-empty-state icon="tv" title="No TV series yet.">
                     <p>Add the first series to the catalogue.</p>
                     <x-button :href="route('admin.series.create')" icon="plus">Add series</x-button>
