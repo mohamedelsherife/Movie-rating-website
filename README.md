@@ -75,8 +75,8 @@ A default admin account is created when the seeders run:
 
 | Field | Value |
 |---|---|
-| Email / username | `admin` |
-| Password | `admin` |
+| Email | `madaramy@gmail.com` |
+| Password | `1234mada` |
 
 > ⚠️ You should change these credentials. Add the following to your `.env` file, then run the command below:
 

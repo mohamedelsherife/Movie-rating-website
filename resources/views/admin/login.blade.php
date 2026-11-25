@@ -29,7 +29,7 @@
             @csrf
 
             <x-form.field label="Email" for="email">
-                <x-form.input name="email" placeholder="Your admin email" autocomplete="username" autofocus required />
+                <x-form.input type="email" name="email" placeholder="Your admin email" autocomplete="username" autofocus required />
             </x-form.field>
 
             <x-form.field label="Password" for="password">

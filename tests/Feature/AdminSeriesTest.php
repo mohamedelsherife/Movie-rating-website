@@ -28,7 +28,7 @@ class AdminSeriesTest extends TestCase
         parent::setUp();
 
         // Admin pages require a logged-in admin.
-        $this->actingAs(Admin::create(['name' => 'Admin', 'email' => 'admin', 'password' => 'secret']), 'admin');
+        $this->actingAs(Admin::create(['name' => 'Admin', 'email' => 'madaramy@gmail.com', 'password' => 'secret']), 'admin');
 
         $this->gilligan = Director::create(['name' => 'Vince Gilligan']);
         $this->nolan = Director::create(['name' => 'Christopher Nolan']);

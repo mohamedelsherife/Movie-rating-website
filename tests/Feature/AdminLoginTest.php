@@ -16,7 +16,7 @@ class AdminLoginTest extends TestCase
     {
         $this->seed(AdminSeeder::class);
 
-        return Admin::firstWhere('email', 'admin');
+        return Admin::firstWhere('email', 'madaramy@gmail.com');
     }
 
     public function test_seeder_creates_one_admin_with_a_hashed_password(): void
@@ -26,9 +26,9 @@ class AdminLoginTest extends TestCase
 
         $this->assertSame(1, Admin::count());
         $admin = Admin::first();
-        $this->assertSame('admin', $admin->email);
-        $this->assertNotSame('admin', $admin->password);
-        $this->assertTrue(Hash::check('admin', $admin->password));
+        $this->assertSame('madaramy@gmail.com', $admin->email);
+        $this->assertNotSame('1234mada', $admin->password);
+        $this->assertTrue(Hash::check('1234mada', $admin->password));
     }
 
     public function test_login_page_is_shown(): void
@@ -68,7 +68,7 @@ class AdminLoginTest extends TestCase
     {
         $admin = $this->seedAdmin();
 
-        $this->post(route('admin.login.submit'), ['email' => 'admin', 'password' => 'admin'])
+        $this->post(route('admin.login.submit'), ['email' => 'madaramy@gmail.com', 'password' => '1234mada'])
             ->assertRedirect(route('admin.dashboard'));
 
         $this->assertAuthenticatedAs($admin, 'admin');
@@ -81,7 +81,7 @@ class AdminLoginTest extends TestCase
 
         $this->get(route('admin.series.index'))->assertRedirect(route('admin.login'));
 
-        $this->post(route('admin.login.submit'), ['email' => 'admin', 'password' => 'admin'])
+        $this->post(route('admin.login.submit'), ['email' => 'madaramy@gmail.com', 'password' => '1234mada'])
             ->assertRedirect(route('admin.series.index'));
     }
 
@@ -90,18 +90,18 @@ class AdminLoginTest extends TestCase
         $this->seedAdmin();
 
         $this->from(route('admin.login'))
-            ->post(route('admin.login.submit'), ['email' => 'admin', 'password' => 'wrong'])
+            ->post(route('admin.login.submit'), ['email' => 'madaramy@gmail.com', 'password' => 'wrong'])
             ->assertRedirect(route('admin.login'))
             ->assertSessionHasErrors('login')
-            ->assertSessionHasInput('email', 'admin')
+            ->assertSessionHasInput('email', 'madaramy@gmail.com')
             ->assertSessionMissing('_old_input.password');
 
         $this->assertGuest('admin');
 
         $this->from(route('admin.login'))->followingRedirects()
-            ->post(route('admin.login.submit'), ['email' => 'admin', 'password' => 'wrong'])
+            ->post(route('admin.login.submit'), ['email' => 'madaramy@gmail.com', 'password' => 'wrong'])
             ->assertSee('Invalid email or password')
-            ->assertSee('value="admin"', false);
+            ->assertSee('value="madaramy@gmail.com"', false);
     }
 
     public function test_login_fields_are_required(): void
@@ -117,7 +117,7 @@ class AdminLoginTest extends TestCase
         $admin = $this->seedAdmin();
 
         $response = $this->post(route('admin.login.submit'), [
-            'email' => 'admin', 'password' => 'admin', 'remember' => '1',
+            'email' => 'madaramy@gmail.com', 'password' => '1234mada', 'remember' => '1',
         ]);
 
         $response->assertCookie(\Illuminate\Support\Facades\Auth::guard('admin')->getRecallerName());
@@ -147,7 +147,7 @@ class AdminLoginTest extends TestCase
     {
         $this->seedAdmin();
 
-        $this->post(route('admin.login.submit'), ['email' => 'admin', 'password' => 'admin']);
+        $this->post(route('admin.login.submit'), ['email' => 'madaramy@gmail.com', 'password' => '1234mada']);
 
         foreach ([
             route('admin.movies.index'),

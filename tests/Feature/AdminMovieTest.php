@@ -27,7 +27,7 @@ class AdminMovieTest extends TestCase
         parent::setUp();
 
         // Admin pages require a logged-in admin.
-        $this->actingAs(Admin::create(['name' => 'Admin', 'email' => 'admin', 'password' => 'secret']), 'admin');
+        $this->actingAs(Admin::create(['name' => 'Admin', 'email' => 'madaramy@gmail.com', 'password' => 'secret']), 'admin');
 
         $this->nolan = Director::create(['name' => 'Christopher Nolan']);
         $this->spielberg = Director::create(['name' => 'Steven Spielberg']);
