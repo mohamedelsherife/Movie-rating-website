@@ -30,11 +30,6 @@
             ['label' => 'TV Series', 'icon' => 'tv',           'route' => 'admin.series.index',  'active' => 'admin.series.*'],
         ];
 
-        // The quick "Add" button follows the section you are in.
-        $addAction = request()->routeIs('admin.series.*')
-            ? ['label' => 'Add series', 'route' => 'admin.series.create']
-            : ['label' => 'Add movie',  'route' => 'admin.movies.create'];
-
         $admin = auth('admin')->user();
     @endphp
 
@@ -63,13 +58,10 @@
                 </ul>
 
                 <div class="nav-actions">
-                    <x-button :href="route($addAction['route'])" icon="plus" size="sm" class="nav-add">{{ $addAction['label'] }}</x-button>
-
                     <div class="nav-account">
                         <span class="nav-avatar" aria-hidden="true">{{ Str::upper(Str::substr($admin->name, 0, 1)) }}</span>
                         <span class="nav-account-text">
                             <strong>{{ $admin->name }}</strong>
-                            <small>{{ $admin->email }}</small>
                         </span>
                         <form action="{{ route('admin.logout') }}" method="POST" class="nav-logout">
                             @csrf
